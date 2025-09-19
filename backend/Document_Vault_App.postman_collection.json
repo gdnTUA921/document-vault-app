@@ -1,0 +1,270 @@
+{
+  "info": {
+    "name": "Document Vault App API",
+    "_postman_id": "5f5b7e7b-6a82-48d6-9f8a-collection",
+    "description": "Postman collection for testing the Laravel backend (JWT + RBAC + secure file storage).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/login", "host": ["{{base_url}}"], "path": ["api", "login"] },
+            "body": { "mode": "raw", "raw": "{\"email\":\"admin1@example.com\",\"password\":\"password\"}" },
+            "description": "Logs in and returns JWT token."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK',()=>pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.environment.set('token', j.token);",
+                  "pm.environment.set('admin_token', j.token);",
+                  "pm.environment.set('user_id', j.user ? j.user.id : '');",
+                  "pm.environment.set('expires_in', j.expires_in || '');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/logout", "host": ["{{base_url}}"], "path": ["api", "logout"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/refresh", "host": ["{{base_url}}"], "path": ["api", "refresh"] }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK',()=>pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.environment.set('token', j.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/me", "host": ["{{base_url}}"], "path": ["api", "me"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/dashboard", "host": ["{{base_url}}"], "path": ["api", "dashboard"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Keys",
+      "item": [
+        {
+          "name": "Generate RSA Keys",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/keys/generate", "host": ["{{base_url}}"], "path": ["api", "keys", "generate"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Rotate RSA Keys",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/keys/rotate", "host": ["{{base_url}}"], "path": ["api", "keys", "rotate"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "List My Files",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/files?scope=my",
+              "host": ["{{base_url}}"], "path": ["api", "files"],
+              "query": [{ "key": "scope", "value": "my" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload File (form-data)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/files", "host": ["{{base_url}}"], "path": ["api", "files"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Sample PDF", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created',()=>pm.response.to.have.status(201));",
+                  "const j = pm.response.json(); pm.environment.set('file_id', j.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show File",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/files/{{file_id}}", "host": ["{{base_url}}"], "path": ["api", "files", "{{file_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Download File",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/files/{{file_id}}/download", "host": ["{{base_url}}"], "path": ["api", "files", "{{file_id}}", "download"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/files/{{file_id}}", "host": ["{{base_url}}"], "path": ["api", "files", "{{file_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sharing",
+      "item": [
+        {
+          "name": "List Shares",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/files/{{file_id}}/share", "host": ["{{base_url}}"], "path": ["api", "files", "{{file_id}}", "share"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Share to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/files/{{file_id}}/share", "host": ["{{base_url}}"], "path": ["api", "files", "{{file_id}}", "share"] },
+            "body": { "mode": "raw", "raw": "{\"shared_with\":6,\"permission\":\"download\"}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Unshare",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/files/{{file_id}}/share/{{share_id}}", "host": ["{{base_url}}"], "path": ["api", "files", "{{file_id}}", "share", "{{share_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search Files",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/api/search?q=sample",
+              "host": ["{{base_url}}"], "path": ["api", "search"],
+              "query": [{ "key": "q", "value": "sample" }]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RBAC",
+      "item": [
+        {
+          "name": "Admin Only",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/admin-only", "host": ["{{base_url}}"], "path": ["api", "admin-only"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Staff Area",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/staff-area", "host": ["{{base_url}}"], "path": ["api", "staff-area"] }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
