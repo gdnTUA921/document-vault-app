@@ -11,6 +11,7 @@ use App\Http\Controllers\UserKeyController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileShareController;
 use App\Http\Controllers\SearchController;
+use App\Http\Middleware\RoleMiddleware;
 
 // Test Route
 Route::get('/hello', function () {
@@ -56,3 +57,4 @@ Route::get('/admin-only', [AdminController::class,'index'])
 
 Route::get('/staff-area', [StaffController::class,'index'])
     ->middleware(['auth:api','role:staff|admin']);
+

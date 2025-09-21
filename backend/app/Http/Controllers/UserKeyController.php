@@ -22,11 +22,21 @@ class UserKeyController extends Controller
     public function rotate(Request $request, RsaKeyService $svc)
     {
         $user = Auth::guard('api')->user();
-        $key  = $svc->generateFor($user);
-        // NOTE: rewrapping existing FileKeys on rotate is out-of-scope for MVP.
-        return response()->json([
-            'message'     => 'RSA keypair rotated',
-            'fingerprint' => $svc->fingerprint($key->public_key),
-        ]);
+
+        try {
+            // ⬇️ this calls the atomic rotate+rewrap logic
+            $rewrapped = $svc->rotateAndRewrap($user);
+
+            return response()->json([
+                'message'          => 'RSA keypair rotated and file keys rewrapped',
+                'rewrapped_count'  => $rewrapped,
+                'new_fingerprint'  => $svc->fingerprint($user->userKey->public_key ?? ''),
+            ], 200);
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['message' => 'Unexpected error during rotation.'], 500);
+        }
     }
 }
