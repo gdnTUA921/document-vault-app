@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\File;
 use App\Models\FileShare;
 use App\Models\AuditLog;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -31,12 +32,50 @@ class DashboardController extends Controller
             ->get();
 
         $admin = null;
+        $staff = null;
+
         if ($u->role === 'admin') {
             $admin = [
                 'users_total'      => User::count(),
                 'files_total'      => File::count(),
                 'audit_logs_total' => AuditLog::count(),
+                'shares_total'     => FileShare::count(),
             ];
+
+            // ✅ Recently uploaded files (last 7 days) - GLOBAL
+            $recentFiles = File::with('user:id,first_name,last_name,email')
+                ->where('created_at', '>=', Carbon::now()->subDays(7))
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get(['id','title','user_id','mime_type','size_bytes','created_at']);
+        }
+        else if ($u->role === 'staff') {
+            $deptId = $u->department_id;
+
+            $staff = [
+                'users_total'  => User::where('department_id', $deptId)->count(),
+                'files_total'  => File::where('department_id', $deptId)->count(),
+                'shares_total' => FileShare::whereHas('file', function ($q) use ($deptId) {
+                    $q->where('department_id', $deptId);
+                })->count(),
+            ];
+
+            // ✅ Recently uploaded files (last 7 days) - DEPARTMENT ONLY
+            $recentFiles = File::with('user:id,first_name,last_name,email')
+                ->where('department_id', $deptId)
+                ->where('created_at', '>=', Carbon::now()->subDays(7))
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get(['id','title','user_id','mime_type','size_bytes','created_at']);
+        }
+        else {
+            // ✅ Recently uploaded files (last 7 days) - SPECIFIC USER ONLY
+            $recentFiles = File::with('user:id,first_name,last_name,email')
+                ->where('user_id', $u->id)
+                ->where('created_at', '>=', Carbon::now()->subDays(7))
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get(['id','title','user_id','mime_type','size_bytes','created_at']);
         }
 
         return response()->json([
@@ -53,7 +92,9 @@ class DashboardController extends Controller
                 'department_files' => $deptFiles,
             ],
             'recent_activity' => $recent,
-            'admin' => $admin,
+            'recent_files'    => $recentFiles, // 👈 Add this for frontend
+            'admin'           => $admin,
+            'staff'           => $staff,
         ]);
     }
 }

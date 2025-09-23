@@ -1,0 +1,295 @@
+/* ============ Page wrapper & header ============ */
+.mf-wrap {
+  padding: 28px clamp(16px, 4vw, 48px);
+  min-height: 75vh;
+  height: auto;
+  max-width: 1120px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.mf-title {
+  margin: 0 0 14px;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ============ Upload bar ============ */
+.mf-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.mf-input,
+.mf-file,
+.mf-btn {
+  height: 42px;
+}
+
+.mf-input {
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  min-width: 260px;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mf-input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(59,130,246,.15);
+}
+
+.mf-file {
+  min-width: 280px; /* file input width */
+}
+
+.mf-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform .04s ease, box-shadow .15s ease, background .15s ease;
+  box-shadow: 0 2px 10px rgba(37,99,235,.15);
+}
+
+.mf-btn:hover { background: #1d4ed8; }
+.mf-btn:active { transform: translateY(1px); }
+.mf-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.mf-btn.ghost {
+  background: #eef2ff;
+  color: #1e3a8a;
+  box-shadow: 0 2px 10px rgba(30,58,138,.08);
+}
+.mf-btn.ghost:hover { background: #e0e7ff; }
+
+.mf-btn.danger {
+  background: #ef4444;
+  box-shadow: 0 2px 10px rgba(239,68,68,.15);
+}
+.mf-btn.danger:hover { background: #dc2626; }
+
+/* ============ Alerts & helpers ============ */
+.mf-alert {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.mf-muted { color: #6b7280; }
+
+/* ============ FILE LIST AS FULL-WIDTH ROWS ============ */
+.mf-grid {
+  display: grid;
+  grid-template-columns: 1fr;   /* one row per file */
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.mf-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.05);
+}
+
+/* Row layout: [icon] [title/meta] [actions…] */
+.mf-card.mf-row {
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  column-gap: 14px;
+  width: 100%;
+  transition: background .15s ease;
+}
+.mf-card.mf-row:hover { background: #fafafa; }
+
+/* Icon/avatar cell */
+.mf-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5eefc;
+  display: grid;
+  place-items: center;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Title + meta (left column) */
+.mf-card .mf-card-head {
+  display: grid;
+  gap: 4px;
+  min-width: 0; /* allow truncation */
+}
+.mf-card .mf-file-title {
+  font-weight: 800;
+  white-space: nowrap;
+}
+.mf-card .mf-file-meta { color: #6b7280; font-size: 12px; }
+
+/* Actions (right columns) */
+.mf-card .mf-actions {
+  grid-column: 3 / -1; /* occupy the last columns */
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  justify-content: end;
+  gap: 10px;
+}
+
+.mf-actions .mf-btn,
+.mf-actions a.mf-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px; /* pill buttons */
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional widths so edges align nicely (won’t break if class missing) */
+.mf-actions .download { min-width: 120px; }
+.mf-actions .share    { min-width: 100px; }
+.mf-actions .danger   { min-width: 110px; }
+
+/* Shares list under a row (when you show recipients) */
+.mf-shares {
+  grid-column: 1 / -1;
+  margin: 10px -18px -4px;
+  padding: 10px 18px 6px;
+  border-top: 1px dashed #e5e7eb;
+  display: grid;
+  gap: 6px;
+  background: #fff;
+}
+.mf-share-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+}
+
+/* ----- Responsive behavior ----- */
+@media (max-width: 920px) {
+  .mf-wrap { padding: 24px 18px; }
+}
+
+@media (max-width: 780px) {
+  .mf-card.mf-row {
+    grid-template-columns: 32px minmax(0,1fr);
+    row-gap: 10px;
+  }
+  .mf-card .mf-actions {
+    grid-column: 1 / -1;    /* wrap under title on small screens */
+    justify-content: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .mf-upload {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mf-input,
+  .mf-file,
+  .mf-btn {
+    width: 100%;
+  }
+  .mf-btn { height: 44px; }
+}
+
+/* Optional zebra stripes for table vibe */
+.mf-grid > .mf-card.mf-row:nth-child(odd) { background: #fff; }
+.mf-grid > .mf-card.mf-row:nth-child(even){ background: #fcfcff; }
+
+/* ============ MODAL ============ */
+.mf-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.mf-modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  animation: mf-fadeIn 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mf-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.mf-modal-form {
+  display: grid;
+  gap: 14px;
+}
+
+.mf-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mf-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.mf-note {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+  background: #f9fafb;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+/* Fade-in animation */
+@keyframes mf-fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -10,7 +10,6 @@ return new class extends Migration {
             $table->bigIncrements('id');
             $table->foreignId('file_id')->constrained('files')->cascadeOnDelete();
             $table->foreignId('shared_with')->constrained('users')->cascadeOnDelete();
-            $table->enum('permission', ['view', 'edit', 'download'])->default('view');
             $table->timestamps();
 
             $table->unique(['file_id', 'shared_with'], 'uq_share');

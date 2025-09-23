@@ -48,7 +48,7 @@ class FileShareController extends Controller
         // persist share + recipient file key
         $share = FileShare::updateOrCreate(
             ['file_id' => $file->id, 'shared_with' => $recipient->id],
-            ['permission' => $request->input('permission')]
+            [] // no permission column anymore
         );
 
         FileKey::updateOrCreate(
@@ -66,8 +66,7 @@ class FileShareController extends Controller
             'file_id'    => $file->id,
             'ip_address' => $request->ip(),
             'details'    => [
-                'shared_with' => $recipient->id,
-                'permission'  => $request->input('permission')
+                'shared_with' => $recipient->id
             ],
         ]);
 
@@ -95,5 +94,24 @@ class FileShareController extends Controller
         ]);
 
         return response()->json(['message' => 'Share removed']);
+    }
+
+    /**
+     * List files shared *with* the authenticated user
+     */
+    public function incoming(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+
+        $shares = FileShare::with([
+                'file' => function ($q) {
+                    $q->with('user:id,first_name,last_name,email'); // owner info
+                }
+            ])
+            ->where('shared_with', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+
+        return response()->json($shares);
     }
 }

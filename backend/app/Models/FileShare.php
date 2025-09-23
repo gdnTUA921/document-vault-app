@@ -12,13 +12,7 @@ class FileShare extends Model
     protected $fillable = [
         'file_id',
         'shared_with',
-        'permission', // 'view'|'edit'|'download'
     ];
-
-    // Permissions as constants (optional)
-    public const PERMISSION_VIEW = 'view';
-    public const PERMISSION_EDIT = 'edit';
-    public const PERMISSION_DOWNLOAD = 'download';
 
     // Relationships
     public function file()

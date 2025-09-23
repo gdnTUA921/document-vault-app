@@ -23,10 +23,15 @@ class FilePolicy
 
     public function download(User $user, File $file): bool
     {
+        // ✅ Staff bypass only for downloads
+        if ($user->role === 'staff') {
+            return true;
+        }
+
         if ($file->user_id === $user->id) return true;
+
         return $file->shares()
             ->where('shared_with', $user->id)
-            ->whereIn('permission', ['download','edit'])
             ->exists();
     }
 
@@ -35,7 +40,6 @@ class FilePolicy
         if ($file->user_id === $user->id) return true;
         return $file->shares()
             ->where('shared_with', $user->id)
-            ->where('permission', 'edit')
             ->exists();
     }
 

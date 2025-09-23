@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    expose:
+      - "5173"
+    environment:
+      - VITE_API_BASE_URL=https://localhost/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:changeme
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=document_vault_app
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: document_vault_app
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: document_vault_caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./certs:/certs
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+      - frontend
+
+  backup:
+    image: mysql:8.0
+    container_name: document_vault_backup
+    depends_on:
+      - db
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        while true; do
+          echo "Running database backup..."
+          mysqldump -h db -u root -proot document_vault_app > /backups/db_backup_$(date +%F_%H-%M-%S).sql
+          sleep 86400  # every 24 hours (once per day)
+        done
+    volumes:
+      - ./backups:/backups
+
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:

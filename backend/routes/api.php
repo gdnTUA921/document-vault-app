@@ -47,14 +47,51 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::post('/files/{file}/share',               [FileShareController::class, 'store']);
     Route::delete('/files/{file}/share/{share}',     [FileShareController::class, 'destroy']);
 
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/shares/incoming', [FileShareController::class, 'incoming']);
+    });
+
     // Search
     Route::get('/search', [SearchController::class, 'index']);
 });
 
-// RBAC-Specific Routes
-Route::get('/admin-only', [AdminController::class,'index'])
-    ->middleware(['auth:api','role:admin']);
 
-Route::get('/staff-area', [StaffController::class,'index'])
-    ->middleware(['auth:api','role:staff|admin']);
+
+/**** RBAC-Specific Routes ****/
+
+//Admin Specific Routes
+Route::group(['middleware' => ['auth:api','role:admin']], function() {
+    Route::get('/admin', [AdminController::class, 'index']);
+
+    // Users
+    Route::get('/admin/users', [AdminController::class, 'listUsers']);
+    Route::post('/admin/users', [AdminController::class, 'createUser']);
+    Route::put('/admin/users/{user}', [AdminController::class, 'updateUser']);
+    Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser']);
+    Route::put('/admin/users/{user}/password', [AdminController::class, 'updatePassword']);
+
+    // Logs
+    Route::get('/admin/logs', [AdminController::class, 'auditLogs']);
+
+    // Departments
+    Route::get('/admin/departments', [AdminController::class, 'departments']);
+
+    //List all files
+    Route::get('/admin/files', [AdminController::class, 'listFiles']);
+});
+
+
+//Staff Specific Routes
+Route::group(['middleware' => ['auth:api','role:staff']], function () {
+    Route::get('/staff', [StaffController::class, 'index']);
+
+    // Users in same department
+    Route::get('/staff/users', [StaffController::class, 'departmentUsers']);
+
+    // Files in same department
+    Route::get('/staff/files', [StaffController::class, 'departmentFiles']);
+
+    // Update own password
+    Route::put('/staff/users/{user}/password', [StaffController::class, 'updatePassword']);
+});
 

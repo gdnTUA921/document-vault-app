@@ -1,0 +1,215 @@
+.admin-wrap {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 75vh;
+  height: auto;
+}
+
+.admin-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.admin-tabs button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.admin-tabs button.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.admin-content {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table th, .admin-table td {
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  text-align: left;
+}
+.admin-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+.admin-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.admin-form input, .admin-form select, .admin-form button {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+.admin-form button {
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+.admin-form button:hover {
+  background: #1d4ed8;
+}
+
+/* ================= Pagination ================= */
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+  font-weight: 700;
+}
+
+
+/* Action buttons in table */
+
+.table-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 6px;
+  transition: background 0.2s;
+}
+.table-btn:hover {
+  background: #e5e7eb;
+}
+.table-btn.danger {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+.table-btn.danger:hover {
+  background: #dc2626;
+}
+.table-btn.primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+.table-btn.primary:hover {
+  background: #1d4ed8;
+}
+
+/* ===== Modal ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+.modal-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal-form {
+  display: grid;
+  gap: 10px;
+}
+.modal-form input, .modal-form select {
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+
+/* Profile box tweaks */
+.profile-box h4 {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Password form inside profile box */
+.profile-box .admin-form {
+  margin-top: 10px;
+}
+
+.profile-box .admin-form input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.profile-box .admin-form button {
+  margin-top: 6px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-box .admin-form button:hover {
+  background: #1d4ed8;
+}

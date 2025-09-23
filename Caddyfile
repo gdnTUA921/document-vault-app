@@ -1,0 +1,12 @@
+# Caddyfile
+
+https://localhost {
+    tls /certs/localhost.crt /certs/localhost.key
+
+    # Laravel backend
+    reverse_proxy /api/* backend:8000
+
+    # React frontend
+    reverse_proxy frontend:5173
+}
+

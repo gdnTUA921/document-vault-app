@@ -54,6 +54,32 @@ class FileController extends Controller
         }
 
         $upload = $request->file('file');
+
+        // ✅ Backend validation for file type & size
+        $allowedTypes = [
+            'text/plain',
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/png',
+            'image/jpeg',
+            'image/gif',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        ];
+        $maxSize = 10 * 1024 * 1024; // 10 MB
+
+        if (!in_array($upload->getMimeType(), $allowedTypes)) {
+            return response()->json([
+                'message' => 'Invalid file type. Allowed: txt, pdf, docx, png, jpeg, gif, xlsx, pptx'
+            ], 422);
+        }
+
+        if ($upload->getSize() > $maxSize) {
+            return response()->json([
+                'message' => 'File too large. Max size is 10MB.'
+            ], 422);
+        }
+
         $raw    = file_get_contents($upload->getRealPath());
 
         // Per-file AES encryption; IV is prepended to the file
@@ -100,6 +126,7 @@ class FileController extends Controller
         return response()->json($file, 201);
     }
 
+
     public function show(Request $request, File $file)
     {
         Gate::authorize('view', $file);
@@ -122,11 +149,27 @@ class FileController extends Controller
             ->where('recipient_user_id', $user->id)
             ->first();
 
-        if (!$fk) {
+        $aesKey = null;
+
+        if ($fk) {
+            // Normal user path
+            $aesKey = $rsa->decryptForUser($user, $fk->encrypted_aes_key);
+        } elseif (in_array($user->role, ['admin','staff'])) {
+            // Admin/staff: pick the owner's FileKey
+            $ownerFk = FileKey::where('file_id', $file->id)
+                ->where('recipient_user_id', $file->user_id)
+                ->first();
+
+            if ($ownerFk) {
+                // ✅ Use the owner's key
+                $aesKey = $rsa->decryptForUser($file->user, $ownerFk->encrypted_aes_key);
+            }
+        }
+
+        if (!$aesKey) {
             return response()->json(['message' => 'No decryption key for this user'], 403);
         }
 
-        $aesKey   = $rsa->decryptForUser($user, $fk->encrypted_aes_key);
         $ivCipher = Storage::disk('local')->get($file->file_path);
         $plain    = $crypto->decryptRaw($ivCipher, $aesKey);
 
@@ -153,6 +196,7 @@ class FileController extends Controller
             'Content-Type'        => $file->mime_type ?: 'application/octet-stream',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
             'X-Content-Hash'      => $file->hash,
+            'X-File-Name'         => $file->original_name,
         ]);
     }
 

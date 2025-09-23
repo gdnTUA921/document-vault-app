@@ -1,0 +1,122 @@
+/* ====== Staff Page Wrapper ====== */
+.staff-wrap {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: 75vh;
+  height: auto;
+}
+
+.staff-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #1e3a8a; /* deep blue accent */
+}
+
+/* ====== Tabs ====== */
+.staff-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.staff-tabs button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.staff-tabs button.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* ====== Content Box ====== */
+.staff-content {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* ====== Table Styles ====== */
+.staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.staff-table th,
+.staff-table td {
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  text-align: left;
+}
+.staff-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+.staff-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* ====== Buttons (table/file actions) ====== */
+.staff-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.staff-btn.ghost {
+  background: #eef2ff;
+  color: #1e3a8a;
+  border: 1px solid #c7d2fe;
+}
+.staff-btn.ghost:hover {
+  background: #e0e7ff;
+}
+
+/* ====== Profile box ====== */
+.profile-box {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+.profile-box p {
+  margin: 4px 0;
+}
+.profile-box h4 {
+  margin-top: 16px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ====== Form Styles ====== */
+.staff-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.staff-form input,
+.staff-form select,
+.staff-form button {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+.staff-form button {
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+.staff-form button:hover {
+  background: #1d4ed8;
+}
