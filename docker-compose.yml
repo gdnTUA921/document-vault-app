@@ -23,6 +23,9 @@ services:
       - "8000"
     volumes:
       - ./backend:/var/www/html
+      - storage_data:/var/www/html/storage   # 🔑 persistent storage
+      - ./backups:/backups                   # ✅ shared backups folder
+      - ./backup/backup.sh:/backup.sh               # ✅ make script available
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -65,23 +68,24 @@ services:
       - frontend
 
   backup:
-    image: mysql:8.0
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
     container_name: document_vault_backup
     depends_on:
       - db
-    entrypoint: [ "sh", "-c" ]
-    command:
-      - |
-        while true; do
-          echo "Running database backup..."
-          mysqldump -h db -u root -proot document_vault_app > /backups/db_backup_$(date +%F_%H-%M-%S).sql
-          sleep 86400  # every 24 hours (once per day)
-        done
+      - backend
     volumes:
       - ./backups:/backups
-
+      - ./backend/storage/app:/var/www/html/storage/app:ro
+      - ./backup/backup.sh:/backup.sh               # ✅ ensure script exists here too
+    environment:
+      - TZ=Asia/Manila
+    networks:
+      - default
 
 volumes:
   db_data:
+  storage_data:      # 🔑 shared file storage
   caddy_data:
   caddy_config:

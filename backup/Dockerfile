@@ -1,13 +1,25 @@
-FROM alpine:3.18
+# Use Debian as base for apt-get availability
+FROM debian:bullseye-slim
 
-RUN apk add --no-cache mysql-client bash coreutils tzdata
+# Install required tools
+RUN apt-get update && apt-get install -y \
+    default-mysql-client \
+    cron \
+    bash \
+    coreutils \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy backup script
 COPY backup.sh /backup.sh
 RUN chmod +x /backup.sh
 
-# Cronjob at 2 AM Manila time
-ENV TZ=Asia/Manila
-RUN echo "0 2 * * * /backup.sh >> /var/log/cron.log 2>&1" > /etc/crontabs/root
+# Add cron job: run every day at 2AM
+RUN echo "0 2 * * * /backup.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/backup
+RUN chmod 0644 /etc/cron.d/backup
 
-CMD ["crond", "-f", "-d", "8"]
+# Apply cron job
+RUN crontab /etc/cron.d/backup
+
+# Run cron in foreground
+CMD ["cron", "-f"]

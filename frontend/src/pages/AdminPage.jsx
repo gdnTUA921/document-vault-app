@@ -205,6 +205,16 @@ export default function AdminPanelPage() {
     }
   };
 
+  // Backup manual trigger
+  const handleManualBackup = async () => {
+    try {
+      await api.post("/admin/backups/manual");
+      alert("Backup started successfully!");
+    } catch (e) {
+      alert("Manual backup failed");
+    }
+  };
+
   // --- Render ---
   return (
     <div className="admin-wrap">
@@ -216,6 +226,7 @@ export default function AdminPanelPage() {
         <button onClick={() => setActiveTab("logs")} className={activeTab === "logs" ? "active" : ""}>Logs</button>
         <button onClick={() => setActiveTab("files")} className={activeTab === "files" ? "active" : ""}>Files</button>
         <button onClick={() => setActiveTab("register")} className={activeTab === "register" ? "active" : ""}>Register User</button>
+        <button onClick={() => setActiveTab("backups")} className={activeTab === "backups" ? "active" : ""}>Backups</button>
         <button onClick={() => setActiveTab("settings")} className={activeTab === "settings" ? "active" : ""}>Settings</button>
       </div>
 
@@ -224,8 +235,6 @@ export default function AdminPanelPage() {
         {activeTab === "users" && (
           <div>
             <h3>👥 All Users</h3>
-
-            {/* Search form */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -279,7 +288,6 @@ export default function AdminPanelPage() {
               </tbody>
             </table>
 
-            {/* Pagination */}
             <div className="pagination">
               <button
                 disabled={userMeta.current_page <= 1}
@@ -333,7 +341,6 @@ export default function AdminPanelPage() {
               </tbody>
             </table>
 
-            {/* Pagination */}
             <div className="pagination">
               <button disabled={logMeta.current_page <= 1} onClick={() => fetchLogs(logMeta.current_page - 1)}>Prev</button>
               {[...Array(logMeta.last_page)].map((_, idx) => {
@@ -353,8 +360,6 @@ export default function AdminPanelPage() {
         {activeTab === "files" && (
           <div>
             <h3>📂 All Uploaded Files</h3>
-
-            {/* Search form */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -434,6 +439,17 @@ export default function AdminPanelPage() {
               </select>
               <button type="submit">Register</button>
             </form>
+          </div>
+        )}
+
+        {/* === Backups Tab === */}
+        {activeTab === "backups" && (
+          <div>
+            <h3>💾 Backups</h3>
+            <p>Automatic backups run daily at <b>2:00 AM</b>.</p>
+            <button className="mf-btn primary" onClick={handleManualBackup}>
+              Run Manual Backup
+            </button>
           </div>
         )}
 

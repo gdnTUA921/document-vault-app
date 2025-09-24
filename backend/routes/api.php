@@ -12,6 +12,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileShareController;
 use App\Http\Controllers\SearchController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\BackupController;
 
 // Test Route
 Route::get('/hello', function () {
@@ -78,6 +79,9 @@ Route::group(['middleware' => ['auth:api','role:admin']], function() {
 
     //List all files
     Route::get('/admin/files', [AdminController::class, 'listFiles']);
+
+    //Backups
+    Route::post('/admin/backups/manual', [BackupController::class, 'manual']);
 });
 
 
